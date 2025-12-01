@@ -1,0 +1,22 @@
+name: CD - Deploy to Railway
+
+on:
+  push:
+    branches:
+      - "release/*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Railway CLI
+        run: npm install -g railway
+
+      - name: Railway Deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service SOE_MDEIS_BACKEND_GESTION

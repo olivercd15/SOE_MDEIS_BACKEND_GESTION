@@ -17,44 +17,79 @@ namespace SOE_MDEIS_BACKEND_GESTION.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClienteDto>>> GetAll()
+        public async Task<ActionResult<ApiResponse<IEnumerable<ClienteDto>>>> GetAll()
         {
             var clientes = await _clienteService.GetAllAsync();
-            return Ok(clientes);
+            var response = ApiResponse<IEnumerable<ClienteDto>>.SuccessResponse(clientes, "Listado de clientes obtenido correctamente");
+            return Ok(response);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<ClienteDto>> GetById(int id)
+        public async Task<ActionResult<ApiResponse<ClienteDto>>> GetById(int id)
         {
             var cliente = await _clienteService.GetByIdAsync(id);
-            if (cliente is null) return NotFound();
+            if (cliente is null)
+            {
+                var error = ApiResponse<ClienteDto>.ErrorResponse(
+                    "Cliente no encontrado",
+                    $"No se encontró un cliente con el id {id}",
+                    StatusCodes.Status404NotFound
+                );
+                return NotFound(error);
+            }
 
-            return Ok(cliente);
+            var response = ApiResponse<ClienteDto>.SuccessResponse(cliente, "Cliente obtenido correctamente");
+            return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClienteDto>> Create([FromBody] ClienteCreateDto dto)
+        public async Task<ActionResult<ApiResponse<ClienteDto>>> Create([FromBody] ClienteCreateDto dto)
         {
             var created = await _clienteService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.ClienteId }, created);
+
+            var response = ApiResponse<ClienteDto>.SuccessResponse(
+                created,
+                "Cliente creado correctamente",
+                StatusCodes.Status201Created
+            );
+
+            return CreatedAtAction(nameof(GetById), new { id = created.ClienteId }, response);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ClienteUpdateDto dto)
+        public async Task<ActionResult<ApiResponse<object>>> Update(int id, [FromBody] ClienteUpdateDto dto)
         {
             var updated = await _clienteService.UpdateAsync(id, dto);
-            if (!updated) return NotFound();
+            if (!updated)
+            {
+                var error = ApiResponse<object>.ErrorResponse(
+                    "No se pudo actualizar el cliente",
+                    $"No existe un cliente con el id {id}",
+                    StatusCodes.Status404NotFound
+                );
+                return NotFound(error);
+            }
 
-            return NoContent();
+            var response = ApiResponse<object>.SuccessResponse(null, "Cliente actualizado correctamente");
+            return Ok(response);
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult<ApiResponse<object>>> Delete(int id)
         {
             var deleted = await _clienteService.DeleteAsync(id);
-            if (!deleted) return NotFound();
+            if (!deleted)
+            {
+                var error = ApiResponse<object>.ErrorResponse(
+                    "No se pudo eliminar el cliente",
+                    $"No existe un cliente con el id {id}",
+                    StatusCodes.Status404NotFound
+                );
+                return NotFound(error);
+            }
 
-            return NoContent();
+            var response = ApiResponse<object>.SuccessResponse(null, "Cliente eliminado correctamente");
+            return Ok(response);
         }
     }
 }

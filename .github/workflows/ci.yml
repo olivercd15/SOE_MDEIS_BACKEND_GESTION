@@ -28,8 +28,8 @@ jobs:
 
       # Compilar proyecto de pruebas
       - name: Build tests
-        run: dotnet build Tests/SOE_MDEIS.Tests/SOE_MDEIS.Tests.csproj --no-restore --configuration Release
+        run: dotnet build Tests/Tests.csproj --no-restore --configuration Release
 
       # Ejecutar las pruebas unitarias
       - name: Run unit tests
-        run: dotnet test Tests/SOE_MDEIS.Tests/SOE_MDEIS.Tests.csproj --no-restore --verbosity normal
+        run: dotnet test Tests/Tests.csproj --no-restore --verbosity normal

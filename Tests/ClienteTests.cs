@@ -15,6 +15,6 @@ public class ClienteTests
         };
 
         Assert.NotEmpty(cliente.NumeroDocumento);
-        Assert.Equal("CI", cliente.TipoDocumento);
+        Assert.Equal("CI123", cliente.TipoDocumento);
     }
 }

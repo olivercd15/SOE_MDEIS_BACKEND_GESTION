@@ -10,20 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup .NET
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "8.0.x"
 
-      - name: Restore dependencies
-        run: dotnet restore ./SOE_MDEIS_BACKEND_GESTION
+      # Restaurar toda la solución
+      - name: Restore solution
+        run: dotnet restore
 
-      - name: Build
-        run: dotnet build ./SOE_MDEIS_BACKEND_GESTION --no-restore --configuration Release
+      # Compilar solo el backend (proyecto principal)
+      - name: Build backend
+        run: dotnet build SOE_MDEIS_BACKEND_GESTION/SOE_MDEIS_BACKEND_GESTION.csproj --no-restore --configuration Release
 
-      - name: Run Tests
-        run: dotnet test ./SOE_MDEIS_BACKEND_GESTION --verbosity normal
+      # Compilar proyecto de pruebas
+      - name: Build tests
+        run: dotnet build Tests/SOE_MDEIS.Tests/SOE_MDEIS.Tests.csproj --no-restore --configuration Release
 
+      # Ejecutar las pruebas unitarias
+      - name: Run unit tests
+        run: dotnet test Tests/SOE_MDEIS.Tests/SOE_MDEIS.Tests.csproj --no-restore --verbosity normal
